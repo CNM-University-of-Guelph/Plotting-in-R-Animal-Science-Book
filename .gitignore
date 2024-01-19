@@ -4,3 +4,6 @@
 .Ruserdata
 /.quarto/
 text_to_ggplot.R
+*_cache
+*_files
+/_book/
