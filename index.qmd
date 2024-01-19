@@ -1,0 +1,72 @@
+# Preface {.unnumbered}
+
+This online 'book' contains a crash-course for animal scientists wanting to efficiently visualise their data, and is designed to accompany an in-person workshop. Therefore, not all of the basics of using R are written here. There are many, better, resources for learning R properly.
+
+This book also does not cover statistics, but focuses on data wrangling and plotting. 
+
+The techniques presented throughout are designed to encourage the reproducibility of work. By keeping well-document codes that do something to our data, we can easily re-create our scientific outputs from the original, raw data.
+
+## Course outline:
+
++----------------+---------------------------------------------------------+
+| 9:00 to 12:00  | -   Intro to visualisations                             |
+|                |                                                         |
+|                | -   Intro to RStudio and R                              |
+|                |                                                         |
+|                | -   Data wrangling                                      |
+|                |                                                         |
+|                | -   Summarising data                                    |
+|                |                                                         |
+|                | -   Creating your first plot                            |
+|                |                                                         |
+|                | -   Customising your first plot                         |
++----------------+---------------------------------------------------------+
+| 12:00 to 13:00 | Lunch break                                             |
++----------------+---------------------------------------------------------+
+| 13:00 to 16:00 | -   Practice different plot types:                      |
+|                |                                                         |
+|                |     -   Histograms                                      |
+|                |                                                         |
+|                |     -   Continuous y-axis with treatment on x-axis:     |
+|                |                                                         |
+|                |         -   Box plots                                   |
+|                |                                                         |
+|                |         -   Violin plots                                |
+|                |                                                         |
+|                |         -   Bar/column plots with error bars            |
+|                |                                                         |
+|                |     -   Continuous x- and y-axis:                       |
+|                |                                                         |
+|                |         -   Scatter plots and trend lines               |
+|                |                                                         |
+|                | -   Saving publication-ready plots                      |
+|                |                                                         |
+|                | -   Create your own plots from own data                 |
+|                |                                                         |
+|                | -   Intro to more advanced plotting techniques:         |
+|                |                                                         |
+|                |     -   Using functions to automate plotting            |
+|                |                                                         |
+|                |     -   Interactive plots                               |
+|                |                                                         |
+|                |     -   Correlations                                    |
+|                |                                                         |
+|                |     -   Heatmaps                                        |
+|                |                                                         |
+|                |     -   Principal Component Analysis                    |
++----------------+---------------------------------------------------------+
+
+## Key resources
+- <https://r4ds.hadley.nz/>
+- <https://r-graphics.org/index.html>
+- <https://r-graph-gallery.com/index.html>
+- <https://ourcodingclub.github.io/tutorials.html>
+- <https://exts.ggplot2.tidyverse.org/gallery/>
+
+
+```{r}
+#| eval: true
+#| include: false
+suppressPackageStartupMessages(library(tidyverse))
+library(palmerpenguins)
+```

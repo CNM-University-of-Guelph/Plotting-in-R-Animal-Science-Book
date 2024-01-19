@@ -1,0 +1,170 @@
+# Intro to Advanced Plotting
+
+## Automation with functions
+
+One of the most useful benefits of using R is that you start to write your own functions to automate tasks.
+
+Let's say I had a few hundred lactation curves I wanted to plot individually. I couldn't facet them all, so I would need to plot them 1 at a time. But if I ever need to repeat something more than 3 times, it deserves to be in a function.
+
+Let's revisit the same data from Fischer-Tlustos (2020): <https://doi.org/10.3168/jds.2019-17357>
+
+```{r}
+#| eval: true
+#| include: false
+suppressPackageStartupMessages(library(tidyverse))
+library(palmerpenguins)
+six_SLN <- data.table::fread('./data/six_SLN_data.csv', na.strings = ".")
+
+```
+
+This time, we will plot each individual animal on own graph. First, let's plot the raw data in a way that we might want to focus on some individual animals.
+
+```{r}
+p_raw <- 
+  six_SLN %>% 
+  ggplot(aes(x = Milking, y = six_SLN_conc, colour = Parity))+
+  geom_point(size = 3)+
+  geom_line(aes(group = Cow_ID),linewidth = 1)+
+  scale_x_continuous(breaks = seq(from = 0, 
+                                   to = 14, 
+                                   by = 1))+
+  scale_colour_viridis_d(begin = 0.2, end = 0.8)+
+  coord_cartesian(ylim = c(NA, 500))+
+  xlab("Milking Number")+ 
+  ylab("6′-Sialyllactose (6′SLN) concentration (μg/mL)")
+  
+p_raw
+```
+
+It seems there's a couple of individuals who are pretty high, and we might want to take a look. One option is to use interactive plots (see below), or we might want to plot one cow at a time.
+
+Let's filter out 1 cow this time, and then re-plot. Notice that all of this code is identical to above, and we just added in a filter step.
+
+```{r}
+six_SLN %>% 
+  filter(Cow_ID == 5716) %>% 
+  ggplot(aes(x = Milking, y = six_SLN_conc, colour = Parity))+
+  geom_point(size = 3)+
+  geom_line(aes(group = Cow_ID),linewidth = 1)+
+  scale_x_continuous(breaks = seq(from = 0, 
+                                   to = 14, 
+                                   by = 1))+
+  scale_colour_viridis_d(begin = 0.2, end = 0.8)+
+  coord_cartesian(ylim = c(NA, 500))+
+  xlab("Milking Number")+ 
+  ylab("6′-Sialyllactose (6′SLN) concentration (μg/mL)")
+```
+
+Let's turn the ggplot part into a function to make it easier for us to re-use:
+
+```{r}
+# create the funciton, this takes a df as input and plots it
+# The function is saved in the environment to re-use
+# 
+f_plot_individual <- 
+  function(df_in){
+    p <- 
+      df_in %>% 
+      ggplot(aes(x = Milking, y = six_SLN_conc, colour = Parity))+
+      geom_point(size = 3)+
+      geom_line(aes(group = Cow_ID),linewidth = 1)+
+      scale_x_continuous(breaks = seq(from = 0, 
+                                      to = 14, 
+                                      by = 1))+
+      scale_colour_viridis_d(begin = 0.2, end = 0.8)+
+      coord_cartesian(ylim = c(NA, 500))+
+      xlab("Milking Number")+ 
+      ylab("6′-Sialyllactose (6′SLN) concentration (μg/mL)")
+    
+    return(p)
+  }
+
+
+
+#subset 1 cow of data to plotx
+subset_data_test <- 
+  six_SLN %>% 
+  filter(Cow_ID == 5716)
+
+# execute the function
+f_plot_individual(df_in = subset_data_test)
+```
+
+Now we can give any dataframe to our function to plot, even the whole dataframe:
+
+```{r}
+f_plot_individual(six_SLN)
+```
+
+### map
+
+Now we are going to go back to a similar idea that we saw in split-apply-combine. This time we will be split our data frame into a list, and tell R to iterate through the list of small data frames and each time run our function.
+
+```{r}
+# split our dataframe into a list of small dataframes
+list_of_dfs <- 
+  six_SLN %>% 
+  group_by(Cow_ID) %>% 
+  group_split()
+```
+
+Let's check the structure of our list. If we look at the first element in our list, it is a df with 1 cow_ID.
+
+```{r}
+list_of_dfs[1]
+```
+
+Here we see the second element is the next cow:
+
+```{r}
+list_of_dfs[2]
+```
+
+Now, let's iterate through the first 3 and last 3 in the list and give it to our function
+
+```{r}
+#| warning: false
+purrr::map(list_of_dfs[c(1:3,18:20)], ~ f_plot_individual(.x))
+
+```
+
+## Interactive plots with plotly
+
+Making interactive plots is easy now that you're used to using RNotebooks (which are actually producing a `.html` file that can accommodate interactive plots in your output). This is made even easier because we only need 1 simple function: `ggplotly()`
+
+See here for details on customising output: <https://plotly.com/ggplot2/>
+
+Once we have a ggplot object, we can give it to `ggplotly`:
+
+```{r}
+plotly::ggplotly(p_raw)
+```
+
+## Correlations
+
+We saw this at the start, but this time it should look a bit easier to understand.
+
+See: <https://allisonhorst.github.io/palmerpenguins/articles/pca.html>
+
+```{r}
+#| warning: false
+penguins %>%
+  select(species, body_mass_g, ends_with("_mm")) %>% 
+  GGally::ggpairs(aes(color = species),
+          columns = c("flipper_length_mm", "body_mass_g", 
+                      "bill_length_mm", "bill_depth_mm")) 
+```
+
+## PCA
+
+This same link has a good resource for PCA analysis as well: <https://allisonhorst.github.io/palmerpenguins/articles/pca.html>
+
+## Heatmaps 
+
+A great package for heatmaps is `pheatmap`. However it isn't as well document. See: https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
+
+It's particularly useful for larger datasets and exploratory work. This is one example from some gene expression work:
+
+![](images/example_pheatmap1.png){fig-align="center" width="550"}
+
+The End.

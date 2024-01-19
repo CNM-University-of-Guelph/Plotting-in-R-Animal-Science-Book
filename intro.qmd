@@ -1,0 +1,135 @@
+# Getting Started in Rstudio
+
+## Using Projects
+
+It is best to use a Project for any data analysis within the RStudio IDE.
+
+Using projects has many benefits as multiple related files are all stored in one directory, and this becomes the 'working directory' which allows easy use of relative pathways.
+
+To begin this workshop we will create a new project. Use the **Create Project** command (available on the Projects menu and on the global toolbar). Then select 'Create project from: **New Directory'**, 'Project Type: **New Project**' and call it something like 'R Plotting Workshop'. This will create a new folder on your computer with this name, so save it somewhere familiar to yourself.
+
+For comprehensive help see: <https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects>
+
+::: callout-note
+## A note on file paths
+
+When we come to importing or exporting files we will deal with file paths. One of the key benefits of using a project is that it makes ***relative*** file paths easier to use.
+
+All file paths within a project are relative to the location of the `.Rproj` file. Therefore if we specify `file = 'filename.csv'`in a function, it will look in the same folder that your `.Rproj` file is located.
+
+We can also specify that with `"./"` before the file name ( \``file = './filename.csv' )`where the dot represents the current level and is handy to remind yourself that it is a relative file path. It is also possible to use `"../"` to go up 2 levels, if needed.
+:::
+
+## Using R Notebooks
+
+It is also encouraged that R Notebooks are used (file extension `.Rmd`) and these should be saved in the top level of the project folder. When you save a Notebook, a `.html` file is generated in the same folder as the `.Rmd` file which shows the output of scripts below each 'chunk' of code. This will help you keep track of your work and the `.html` reports make it quick and easy to view the results outside of RStudio. In fact, this book is written in a very similar way to R Notebooks, and you will see why this is so handy in the next chapters.
+
+Only the output that is visible when you save or 'Preview' the file is saved in the `.html` file, so acts just like a notebook.
+
+::: callout-note
+These are different to 'RMarkdown' files which executes all of the code at the time of 'rendering', despite both using the `.Rmd` file extension. The `output: html_notebook` at the start of the file tells RStudio to show the 'Preview' button instead of the 'Render' option used in RMarkdown files.
+:::
+
+For this workshop, let's create a new R Notebook by clicking `File -> New File -> R Notebook`. It will bring up some more introductory details if you are unfamiliar with these.
+
+Files created in 'Markdown' are highly customisable. Some key syntax:
+
+*Italicise Text* using `italic` or `_italic_`
+
+**Bold Text** using `**bold**` or `__bold__`
+
+Heading levels:
+
+-   `# Heading 1`
+
+-   `## Heading 2` , etc.
+
+Unordered lists:
+
+    * Item 1
+    * Item 2
+        + Item 2a
+        + Item 2b
+
+Ordered lists:
+
+    1. Item 1
+    2. Item 2
+    3. Item 3
+        + Item 3a
+        + Item 3b
+
+More details: <https://rmarkdown.rstudio.com/authoring_basics.html>
+
+## Installing packages
+
+We will be using 'packages' which are basically a group of functions packaged up together with some documentation. When you install and open R (either in RStudio or elsewhere) it pre-loads some **base** packages.
+
+Learning base R functions is very important if you continue to use R, especially knowledge of data types (vectors, lists, dataframes, etc), subsetting operations, loops and vectorised operations. This is all outside the scope of this workshop. Although you will be able to follow along with this course, you'll need to learn some of these concepts to fully utilise R moving forward.
+
+For this workshop we will use the \`tidyverse\`. The tidyverse is a collection of packages that all follow a particular style of coding. It is very well documented and user-friendly, and includes the `ggplot2` package, which is the most common way of plotting in R now.
+
+See: <https://www.tidyverse.org/>
+
+To install a package, copy and paste this code into the Console and run it.
+
+```{r}
+#| echo: true
+#| eval: false
+install.packages('tidyverse')
+```
+
+::: callout-tip
+RStudio also has a 'Packages' tab where you can see the packages that are installed and loaded. There's also an 'Install' button which does the same as writing `install.packages`.
+:::
+
+We will also use a dataset collected at Palmer Station, Antarctica about penguins. It is made available in this package :
+
+```{r}
+#| echo: true
+#| eval: false
+install.packages("palmerpenguins")
+```
+
+## Load packages
+
+Although packages are installed, not all of them are loaded and ready to use. Instead, every time you open your R session you will need to re-load these packages. This is useful, because often you will only want to load certain packages to do a task, not all of them.
+
+For the start of this workshop we can simply load the tidyverse, which includes most packages we will use. Copy this code into your own file and follow along.
+
+```{r setup}
+#| echo: true
+#| eval: false
+library(tidyverse)
+
+```
+
+::: callout-tip
+All code chunks will have a 'copy to clipboard' button appear to the right of the chunk if you hover it.
+:::
+
+The first 'code chunk' of your R Notebook should be labelled `setup`, by using `{r setup}` at the start of code chunk. Everything between the two sets of three backticks (```` ``` ````) is executed as R code, and everything outside of these is rendered as text. By labelling the first code chunk as `setup`, RStudio will execute this code chunk before running any other code if it has not already done so in the current session. This is particularly useful for loading your R packages.
+
+```` markdown
+`r ''````{r setup}
+library(tidyverse)
+```
+````
+
+## Getting help
+
+### Help
+
+Packages are required to have documentation, or a 'help' files for each function. To access these, put your cursor on the function name and press F1 key. The documentation will show up in the 'Help' tab inside RSTudio. Otherwise, type `help(functionname)` or `?functionname`in the Console. e.g. `help(ggplot)` or `?functionname`.
+
+### Vignettes
+
+Some packages also have vignettes, which are long-form documents on how to use a package. The easiest way to find these is to search for the package on CRAN. For example, there are 3 vignette's listed for the ggplot2 package: <https://cran.r-project.org/package=ggplot2>
+
+### Cheat Sheets
+
+There are a bunch of cheat sheets for packages available within RStudio ( `Help -> Cheat Sheets ->`). Also see: <https://posit.co/resources/cheatsheets/>
+
+### Search online
+
+There's a lot of resources online for learning R, including free 'books' like this one. If you've got a particular question you can search on forums like <https://stackoverflow.com>

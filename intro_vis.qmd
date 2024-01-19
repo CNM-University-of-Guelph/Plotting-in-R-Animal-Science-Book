@@ -1,0 +1,261 @@
+# Intro to Data Visualisation
+
+::: callout-warning
+You can use the `code` button to expand the R code for some of plots below, but don't worry if it doesn't make sense. The plots are here to explain concepts, and we will learn about the code later!
+:::
+
+## Typical workflow
+
+A typical workflow might be:
+
+1.  Data collection
+
+-   Animal experiment records (e.g. nice Excel sheets or AirTable sheets/apps)
+-   Data from a machine/instrument in the farm/lab (e.g. sensor data)
+
+2.  Prepare data for input to statistical software
+
+-   Computer friendly column names
+-   Basically any format can be imported. Usually .csv or .txt are easiest for beginners.
+
+3.  Data wrangling in R
+
+-   wide vs long vs tidy formats
+-   dates/times and data types
+
+4.  Data exploration and visualisation
+
+5.  Statistical Analysis
+
+-   Export clean data to SAS for statistical analysis OR
+-   run stats in R
+
+6.  Import SAS output (e.g. lsmeans) OR use outputs within R
+
+7.  Create publication-ready plots
+
+There are 2 key steps in this workflow where data visualisation occurs:
+
+-   Data exploration
+-   Communicating data
+
+## Data exploration
+
+Data exploration is an important initial process when first looking at a dataset. It's a time for checking the quality and integrity of your data but also it's a time to discover things you were not expecting to see.
+
+Visualisation is key to data exploration, especially when your dataset is very large.
+
+It's also a rough process, and very little time should be spent trying to make your plots visually appealing to others. You may add titles or labels to help you remember what you plot, but you would probably leave many of the default settings. Using a R Notebooks, as we are in this course, are great for this process as you can keep your notes alongside your plots and your code keeps track of exactly what you did.
+
+### Example - lactation data
+
+Recently I noticed some strange numbers when visualising a dataset with daily records for about 800 lactations.
+
+Firstly, I plotted a count of how many lactations were in the dataset for each day (as a number from 1 to *n*).
+
+![](images/unnamed-chunk-12-1.png)
+
+Here we can see that the number of lactations per day decreases over time, which is ok but this was important to know. More importantly, there were some dots displayed between 100 - 200 DIM that did not make sense.
+
+This led me to notice this:
+
+![](images/unnamed-chunk-10-1.png)
+
+It turns out that 1 cow had some DIM that were not integers e.g. 150.2 which meant they stood out.
+
+After a range of filtering process, the final dataset was visualised and I had a consistent number of records up to 305 DIM... almost. Even this plot showed that there was very few records for less than 10 DIM. In addition, there was 499 lactations but there was never 499 records on any one day, meaning that there must have been some actual dates that had no records.
+
+![](images/unnamed-chunk-16-1.png)
+
+### Example - comparing 'means'
+
+When we have experiments with treatments, sometimes we assume all the data is correct and proceed with statistics (and hopefully pick up some outliers in the process) or we just go straight to comparing the means of each treatment visually.
+
+This can hide potential problems with your data, but also hides important, real attributes of your data. To take a simple example from the ['palmer penguins'](https://allisonhorst.github.io/palmerpenguins/) dataset. The mean bill depth (mm) for 3 different islands is:
+
+```{r}
+#| eval: true
+#| include: false
+suppressPackageStartupMessages(library(tidyverse))
+library(palmerpenguins)
+```
+
+```{r}
+#| code-fold: true
+penguins %>% 
+  group_by(island) %>% 
+  summarise(mean_bill_depth_mm = mean(bill_depth_mm, na.rm= TRUE))
+```
+
+If we check the raw data, it seems that there's a lot of overlap, but nothing looks out of place:
+
+```{r}
+#| code-fold: true
+ggplot(penguins, aes(x = island, 
+                     y = bill_depth_mm, 
+                     #colour = species
+                     )) +
+  geom_boxplot()+
+  geom_jitter(width = 0.2)
+
+```
+
+But if we add looked at an additional variable, we would see that the species itself seems to be important:
+
+```{r}
+#| code-fold: true
+ggplot(penguins, aes(x = island, y = bill_depth_mm, colour = species)) +
+  geom_boxplot()
+
+```
+
+## Example - interactive plots
+
+Once we've got the hang of building different visualisations to explore our data, we often find ourselves wondering what a 1 particular point on a graph is e.g. an outlier.
+
+We can very easily find that data point in a table in R using some filtering OR... we can quickly visualise it interactively so that we can hover over a data point and see some information about it.
+
+```{r}
+#| code-fold: true
+#| warning: false
+#| message: false
+library(plotly)
+
+p <- ggplot(penguins, 
+            aes(x = island, 
+                y = bill_depth_mm, 
+                colour = species, 
+                text = paste("sex: ", sex))
+            ) +
+  geom_jitter()
+
+ggplotly(p)
+```
+
+### Correlation plots
+
+Here's an example of a useful way to explore correlations from <https://allisonhorst.github.io/palmerpenguins/articles/pca.html>
+
+Notice the [Simpson's paradox](https://en.wikipedia.org/wiki/Simpson%27s_paradox)? This is a great example of how correlations alone can be misleading.
+
+```{r}
+#| code-fold: true
+#| warning: false
+#| message: false
+
+penguins %>%
+  select(species, body_mass_g, ends_with("_mm")) %>% 
+  GGally::ggpairs(aes(color = species),
+          columns = c("flipper_length_mm", "body_mass_g", 
+                      "bill_length_mm", "bill_depth_mm")) 
+
+# If you are trying to run this code you will need to install.packages("GGally").
+# 
+# The :: in the GGally::ggpairs() above tells R to look for the ggpairs() function within the GGally package, but without loading all of the functions from that package.
+# 
+# It is also useful to remind yourself which package a function comes from if it is not something you use often.
+# 
+
+```
+
+## Communication and publishing
+
+At this point of your workflow you've got a good idea about your data and there's something from it that you want to communicate. There's a lot of books and resources online, and conflicting opinions about what is best practice.
+
+Visualisations can be very effective.... or terrible: [viz.wtf](viz.wtf)
+
+```{=html}
+ <div class="tumblr-post" data-href="https://embed.tumblr.com/embed/post/jrYB9ls9tbp1jgCsod6-GQ/673472354894086144" data-did="4e6336e4859d2d85a490c81a6cb5419f5722b3dd"><a href="https://viz.wtf/post/673472354894086144/sticking-your-neck-out">https://viz.wtf/post/673472354894086144/sticking-your-neck-out</a></div>  <script async src="https://assets.tumblr.com/post.js"></script>
+```
+::: callout-tip
+Check out this website to help you rate your data visualisation: <https://stephanieevergreen.com/rate-your-visualization/>
+:::
+
+I won't attempt to explain all there is to know about best practises but have included some relevant resources. Some are even specific to R: <http://rafalab.dfci.harvard.edu/dsbook/data-visualization-principles.html>
+
+As animal scientists we often need to produce visualisations for presentations and for publications, which have different requirements.
+
+For example, you won't see this in a publication but it is effective in drawing attention to your data in a presentation (although there's still room for improvement with this plot):
+
+![](images/liveweight_moving_looped.gif)
+
+For inspiration and advice for choosing the correct visualisation check out: <https://www.data-to-viz.com/>
+
+There's also a page on this site that links to certain caveats to watch out for, such as the problems with a dual axis: <https://blog.datawrapper.de/dualaxis/>
+
+Did I mention that opinions can differ? Some animal scientistis love these difficult-to-interpet graphs!
+
+It just so happens that the authors of `ggplot2` dislike dual axis plots and it is therefore inherently difficult to do with `ggplot2` (with [some exceptions](https://ggplot2.tidyverse.org/reference/sec_axis.html))
+
+### Plots for publications
+
+There is a whole package dedicated to helping format plots for publications: <https://rpkgs.datanovia.com/ggpubr>
+
+For example, it is great for adding measures of significance (\* or P values) to a plot, such as:
+
+![](images/GOI_example.png){width="755"}
+
+::: callout-note
+This is the ggplot part of the code to make the above plot, but it won't run as a reproducible example. It also won't make much sense now, but after you finish this course it might!
+
+```{r}
+#| code-fold: true
+#| eval: false
+
+p_for_publish<- 
+  ggplot(data = data0 , 
+         mapping = aes(x = Treatment,
+                       y = column_to_plot,
+                       colour = Treatment)) +
+  geom_blank(aes(x=Treatment, y = y_max0))+
+  geom_boxplot(aes(fill = Treatment))+
+  geom_jitter(aes(fill = Treatment),colour = "black", size = 1, width = 0.3, alpha = 0.3, shape = 21)+
+  viridis::scale_color_viridis(discrete=TRUE)+
+  viridis::scale_fill_viridis(discrete=TRUE, alpha = 0.5)+
+  lemon::facet_rep_grid(cols = vars(region), rows = vars(gene_name), repeat.tick.labels ='y', scale = "free_y")+
+  xlab("Treatment")+
+  ylab("Log2 Expression")+
+    theme_classic2(base_size = 10) +
+  theme(axis.text.x = element_text(size = 6, colour = "black", angle=25, hjust=1),
+        strip.text.x = element_text(size = 8, colour = "black", face = "plain"),
+        strip.text.y = element_text(size = 8, colour = "black", face = "italic"), 
+        axis.title = element_text(size = 10, colour = "black", face = "plain"),
+        legend.title = element_text(size = 10, colour = "black", face = "plain"))+ 
+  ggpubr::stat_pvalue_manual(data = data_DE_2 ,
+                             y.position = 'y.position',
+                             label = "adj-P = {p.adj}",
+                             label.size = 2.5,
+                             color = "blue",
+                             step.group.by = "region",
+                             hide.ns=F)
+
+
+```
+:::
+
+### Plots for anything!
+
+Nearly everything in a plot created with \`ggplot2\` can be customised. Although this may be tedious at first, it becomes very quick to re-produce high quality plots. We will cover some of these, but if you can think of it, there's a fair chance someone has already asked about it online!
+
+I even made the logo for this course using an R package I found after googling some ideas.
+
+```{r}
+#| code-fold: true
+#| code-summary: "See the code for the logo:"
+string_df1 <- hershey::create_string_df(text = "Plotting in R", font = 'futural') %>% mutate(row = 1)
+
+string_df2 <- hershey::create_string_df(text = "for Animal Science", font = 'futural') %>% mutate(row = 2)
+
+string_df <- bind_rows(string_df1, string_df2)
+
+ggplot(string_df, 
+       aes(x, y, 
+           group = interaction(char_idx, stroke),
+           colour = char,
+           shape = as.factor(row))) +
+  geom_path() +
+  geom_point(size = 1) + 
+  coord_equal() +
+  theme(legend.position = 'none')+
+  facet_grid(rows = vars(row))
+```

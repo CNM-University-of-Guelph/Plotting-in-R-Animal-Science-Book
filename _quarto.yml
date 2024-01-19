@@ -1,0 +1,37 @@
+project:
+  type: book
+
+execute:
+  echo: fenced
+  cache: true
+
+book:
+  title: "Plotting in R for Animal Science Workshop"
+  author: "David Innes"
+  date: last-modified
+  date-format: long
+  # downloads: [pdf]
+  cover-image: logo.png
+  sidebar:
+    style: "docked"
+    search: true
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - intro_vis.qmd
+    - data_wrangling.qmd
+    - summarising_data.qmd
+    - first_plot.qmd
+    - custom.qmd
+    - advanced_plots.qmd
+
+
+format:
+  html:
+    theme: materia
+  # pdf:
+  #   documentclass: scrreprt
+  #   prefer-html: true
+
+
+

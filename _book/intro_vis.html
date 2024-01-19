@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Plotting in R for Animal Science Workshop - 2&nbsp; Intro to Data Visualisation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./data_wrangling.html" rel="next">
+<link href="./intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro_vis.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Data Visualisation</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Plotting in R for Animal Science Workshop</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started in Rstudio</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_vis.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Data Visualisation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data wrangling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summarising_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Summarising data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./first_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Making your first plot</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./custom.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Customising Plots</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Intro to Advanced Plotting</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#typical-workflow" id="toc-typical-workflow" class="nav-link active" data-scroll-target="#typical-workflow"><span class="header-section-number">2.1</span> Typical workflow</a></li>
+  <li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration"><span class="header-section-number">2.2</span> Data exploration</a>
+  <ul class="collapse">
+  <li><a href="#example---lactation-data" id="toc-example---lactation-data" class="nav-link" data-scroll-target="#example---lactation-data"><span class="header-section-number">2.2.1</span> Example - lactation data</a></li>
+  <li><a href="#example---comparing-means" id="toc-example---comparing-means" class="nav-link" data-scroll-target="#example---comparing-means"><span class="header-section-number">2.2.2</span> Example - comparing ‘means’</a></li>
+  </ul></li>
+  <li><a href="#example---interactive-plots" id="toc-example---interactive-plots" class="nav-link" data-scroll-target="#example---interactive-plots"><span class="header-section-number">2.3</span> Example - interactive plots</a>
+  <ul class="collapse">
+  <li><a href="#correlation-plots" id="toc-correlation-plots" class="nav-link" data-scroll-target="#correlation-plots"><span class="header-section-number">2.3.1</span> Correlation plots</a></li>
+  </ul></li>
+  <li><a href="#communication-and-publishing" id="toc-communication-and-publishing" class="nav-link" data-scroll-target="#communication-and-publishing"><span class="header-section-number">2.4</span> Communication and publishing</a>
+  <ul class="collapse">
+  <li><a href="#plots-for-publications" id="toc-plots-for-publications" class="nav-link" data-scroll-target="#plots-for-publications"><span class="header-section-number">2.4.1</span> Plots for publications</a></li>
+  <li><a href="#plots-for-anything" id="toc-plots-for-anything" class="nav-link" data-scroll-target="#plots-for-anything"><span class="header-section-number">2.4.2</span> Plots for anything!</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Data Visualisation</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can use the <code>code</code> button to expand the R code for some of plots below, but don’t worry if it doesn’t make sense. The plots are here to explain concepts, and we will learn about the code later!</p>
+</div>
+</div>
+<section id="typical-workflow" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="typical-workflow"><span class="header-section-number">2.1</span> Typical workflow</h2>
+<p>A typical workflow might be:</p>
+<ol type="1">
+<li>Data collection</li>
+</ol>
+<ul>
+<li>Animal experiment records (e.g.&nbsp;nice Excel sheets or AirTable sheets/apps)</li>
+<li>Data from a machine/instrument in the farm/lab (e.g.&nbsp;sensor data)</li>
+</ul>
+<ol start="2" type="1">
+<li>Prepare data for input to statistical software</li>
+</ol>
+<ul>
+<li>Computer friendly column names</li>
+<li>Basically any format can be imported. Usually .csv or .txt are easiest for beginners.</li>
+</ul>
+<ol start="3" type="1">
+<li>Data wrangling in R</li>
+</ol>
+<ul>
+<li>wide vs long vs tidy formats</li>
+<li>dates/times and data types</li>
+</ul>
+<ol start="4" type="1">
+<li><p>Data exploration and visualisation</p></li>
+<li><p>Statistical Analysis</p></li>
+</ol>
+<ul>
+<li>Export clean data to SAS for statistical analysis OR</li>
+<li>run stats in R</li>
+</ul>
+<ol start="6" type="1">
+<li><p>Import SAS output (e.g.&nbsp;lsmeans) OR use outputs within R</p></li>
+<li><p>Create publication-ready plots</p></li>
+</ol>
+<p>There are 2 key steps in this workflow where data visualisation occurs:</p>
+<ul>
+<li>Data exploration</li>
+<li>Communicating data</li>
+</ul>
+</section>
+<section id="data-exploration" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-exploration"><span class="header-section-number">2.2</span> Data exploration</h2>
+<p>Data exploration is an important initial process when first looking at a dataset. It’s a time for checking the quality and integrity of your data but also it’s a time to discover things you were not expecting to see.</p>
+<p>Visualisation is key to data exploration, especially when your dataset is very large.</p>
+<p>It’s also a rough process, and very little time should be spent trying to make your plots visually appealing to others. You may add titles or labels to help you remember what you plot, but you would probably leave many of the default settings. Using a R Notebooks, as we are in this course, are great for this process as you can keep your notes alongside your plots and your code keeps track of exactly what you did.</p>
+<section id="example---lactation-data" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="example---lactation-data"><span class="header-section-number">2.2.1</span> Example - lactation data</h3>
+<p>Recently I noticed some strange numbers when visualising a dataset with daily records for about 800 lactations.</p>
+<p>Firstly, I plotted a count of how many lactations were in the dataset for each day (as a number from 1 to <em>n</em>).</p>
+<p><img src="images/unnamed-chunk-12-1.png" class="img-fluid"></p>
+<p>Here we can see that the number of lactations per day decreases over time, which is ok but this was important to know. More importantly, there were some dots displayed between 100 - 200 DIM that did not make sense.</p>
+<p>This led me to notice this:</p>
+<p><img src="images/unnamed-chunk-10-1.png" class="img-fluid"></p>
+<p>It turns out that 1 cow had some DIM that were not integers e.g.&nbsp;150.2 which meant they stood out.</p>
+<p>After a range of filtering process, the final dataset was visualised and I had a consistent number of records up to 305 DIM… almost. Even this plot showed that there was very few records for less than 10 DIM. In addition, there was 499 lactations but there was never 499 records on any one day, meaning that there must have been some actual dates that had no records.</p>
+<p><img src="images/unnamed-chunk-16-1.png" class="img-fluid"></p>
+</section>
+<section id="example---comparing-means" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="example---comparing-means"><span class="header-section-number">2.2.2</span> Example - comparing ‘means’</h3>
+<p>When we have experiments with treatments, sometimes we assume all the data is correct and proceed with statistics (and hopefully pick up some outliers in the process) or we just go straight to comparing the means of each treatment visually.</p>
+<p>This can hide potential problems with your data, but also hides important, real attributes of your data. To take a simple example from the <a href="https://allisonhorst.github.io/palmerpenguins/">‘palmer penguins’</a> dataset. The mean bill depth (mm) for 3 different islands is:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_bill_depth_mm =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm=</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  island    mean_bill_depth_mm
+  &lt;fct&gt;                  &lt;dbl&gt;
+1 Biscoe                  15.9
+2 Dream                   18.3
+3 Torgersen               18.4</code></pre>
+</div>
+</div>
+<p>If we check the raw data, it seems that there’s a lot of overlap, but nothing looks out of place:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins, <span class="fu">aes</span>(<span class="at">x =</span> island, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y =</span> bill_depth_mm, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                     <span class="co">#colour = species</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                     )) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 2 rows containing missing values (`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="intro_vis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>But if we add looked at an additional variable, we would see that the species itself seems to be important:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins, <span class="fu">aes</span>(<span class="at">x =</span> island, <span class="at">y =</span> bill_depth_mm, <span class="at">colour =</span> species)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="intro_vis_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="example---interactive-plots" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="example---interactive-plots"><span class="header-section-number">2.3</span> Example - interactive plots</h2>
+<p>Once we’ve got the hang of building different visualisations to explore our data, we often find ourselves wondering what a 1 particular point on a graph is e.g.&nbsp;an outlier.</p>
+<p>We can very easily find that data point in a table in R using some filtering OR… we can quickly visualise it interactively so that we can hover over a data point and see some information about it.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(penguins, </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> island, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> bill_depth_mm, </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">colour =</span> species, </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="fu">paste</span>(<span class="st">"sex: "</span>, sex))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>()</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(p)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2a47eb4014f8243cf460" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-2a47eb4014f8243cf460">{"x":{"data":[{"x":[3.1119594918563962,3.0786586575210095,2.8186046060174705,2.9724367566406729,3.013190088607371,3.3657285438850524,3.2206034064292908,3.1140708999708293,3.1362164860591291,2.9627310885116458,2.814626870304346,2.6916847972199323,2.6689700318500398,3.3780864501371979,2.6429650977253916,2.9586144009605051,2.6084645722061395,2.731073996052146,2.6299500452354549,2.8395478051155805,1.0542093131691217,0.83683855179697275,1.1404866583645343,0.92099713552743201,1.3674202552065253,1.1857247846201062,0.96872631479054694,0.77840814776718614,1.1904414506629108,0.93737218603491779,2.2228771217167376,1.953764527849853,1.6763568565249443,2.2902275398373604,1.9801358612254263,1.9610966846346856,2.2159946959465744,2.3258751170709728,1.8831548333168029,1.8282132053747773,2.3744048694148661,1.8837726620957256,2.1164032535627486,1.950775919854641,1.8155498579144478,1.8193535517901183,2.3413036016747357,1.8607881143689156,1.7949120892211794,2.3124220421537758,0.9405088169500232,0.81168126687407494,1.3213340980932116,0.82251134905964141,1.1472785018384457,0.6685366205871105,1.0448608379811049,0.8832256637513638,1.2832328518852592,1.0969426009804011,1.1274286957457662,1.1467566099017859,0.61130621079355474,1.1162371637299657,0.9829409196972847,1.3121277159079909,0.79825989976525302,0.60056792143732307,2.8866379300132392,3.1770861156284811,3.3118692936375735,2.7830650590360166,3.0268402745947243,2.9556064486503599,3.1060187896713614,3.2673152295872567,2.8229524344205856,3.2990784330293534,2.9451363457366826,3.0781174872070549,3.0580011298879981,3.113588568009436,2.7649398410692809,3.1807100500911476,2.0213619157671929,1.6372838333249091,1.7013845371082426,2.2688004309311509,2.1515024123713373,1.7356327641755342,2.0130954958498477,1.9381357649341227,2.0780313748866321,1.6435086211189627,2.0480361238121985,1.6077061487361788,1.8307311648502946,1.9838613595813512,2.0121798269450664,1.60142172742635,0.68861152343451981,0.97488362248986959,1.3673940088599921,0.87243603710085149,0.85550681650638571,0.83033964242786173,0.65761672630906109,1.2898770950734617,0.85823374819010501,0.64677447322756043,1.3137645671144127,0.97087520938366656,0.96298188120126726,0.89814017433673143,1.0309564061462879,0.96207998264580963,2.8433148389682175,2.6350606577470899,3.0645469494163988,3.2930558696389198,3.2107007250189783,3.3133609347045421,3.1788009012117984,3.1308936135843397,2.9041593832895161,3.2425903407856822,3.1197474887594581,3.1523600190877916,2.7137244222685695,3.3059007788076995,2.7478706652298568,3.3784044122323396,2.3176683424040676,1.8890610890462995,1.9754673929885029,2.1296594688668846,1.9689189866185188,2.1398456813767552,1.8423843659460544,1.6958103258162738,1.7189907742664219,1.8937778430059553,2.0966698676347733,2.3167681301012637,1.8294705238193274,1.9504784535616637,1.8883790601044894,1.8181600196287035,1.6592180037871003,1.8630543870851397,2.1786314142867922,1.9850752335041761],"y":[18.682923464216291,17.407480002380908,17.987515820153057,null,19.262797519303859,20.639005908165128,17.837026252411306,19.57740752624348,18.081164184827358,20.223366030044854,17.088754358198496,17.271019461061808,17.581575344968588,21.209452240746469,21.069017273020002,17.807316713538022,18.986553186085075,20.701228809747843,18.387422004137186,21.527893640734256,18.267519848812373,18.687352685425431,19.197154100779443,18.076361129228026,17.210866850838062,18.888470426015555,18.603753370251507,17.8891457808204,18.595085930749775,18.936683529522266,16.716286929044873,18.120808802917601,17.830505650863053,18.888962709251789,17.030678504351524,21.134094718061387,19.96014174386859,18.505421330425889,19.319679094441234,19.100022597871721,18.023379155062138,18.420460268892345,18.496666205115616,19.695491588450967,16.899637655168771,18.774599487930537,18.9996980833821,18.864803081378341,17.90871441869065,21.233806401751934,17.686383672915397,18.929266504403202,17.927576853837817,19.462008445747198,18.085853547807783,18.619933855328711,17.51025524996221,18.767682784702629,16.638424032796173,19.110158802177757,16.932196807321159,21.081416579820218,17.010427785050123,18.180642818771304,17.102057937607171,17.994178883489223,16.226236580908296,19.062559985686097,16.594620847515763,19.384898844622075,18.988211098127067,18.375699250418691,17.169545213822275,18.910061152223495,17.530893947780132,18.525272508841006,16.789823108483105,19.389535096511242,16.113317632209512,19.079046127889306,17.207451049443332,17.573506468907002,18.78244208374992,19.430467614382504,17.831886808183043,20.335832389798014,19.46162295408547,18.567929321154953,19.200732131581752,18.763091515023262,17.981941686347128,18.111955674216151,17.111293506436052,18.108820573054256,17.338978488538412,18.865735208410769,18.586255562696607,18.485608691461383,16.100644726287577,18.469103498607875,17.884798899926245,19.983615233786406,16.018117381595076,19.998997771162539,18.571454104799781,18.912476236764341,17.203996902424841,20.011894176378846,17.02414102435112,18.982707943245767,16.504486166201531,20.273293304741383,17.730832414813339,19.489136068951339,20.697807605303822,18.266090795528147,17.004823965355754,20.523512167651205,16.981009416654707,18.608949109893292,17.164546496085823,19.79923542464152,17.024353072140364,18.493263374418021,15.927629754655063,19.021639336589722,17.634551772363483,18.293985342122614,17.12581601491198,17.977996952310203,17.909968060627577,19.160357050690799,18.474096005726608,18.513608744516969,17.561942856330425,17.502346238885075,17.513937785755843,20.115448099151255,16.501319424267859,17.90760866222903,17.090927256215366,17.186089206039906,15.500108059868216,17.019610715918244,16.82536488711834,18.727159296106546,18.560869266781957,18.38756184015423,17.792403684034944,18.119586001317948,17.110547709520908,18.539405928328634],"text":["island: Torgersen<br />bill_depth_mm: 18.7<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.4<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm:   NA<br />species: Adelie<br />sex:  NA","island: Torgersen<br />bill_depth_mm: 19.3<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 20.6<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.8<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.6<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  NA","island: Torgersen<br />bill_depth_mm: 20.2<br />species: Adelie<br />sex:  NA","island: Torgersen<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  NA","island: Torgersen<br />bill_depth_mm: 17.3<br />species: Adelie<br />sex:  NA","island: Torgersen<br />bill_depth_mm: 17.6<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 21.2<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 21.1<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.8<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 20.7<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 18.4<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 21.5<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 18.3<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.7<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 19.2<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 16.7<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 21.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 20.0<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 19.3<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 19.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.0<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.4<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 19.7<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 16.9<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.8<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 19.0<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  NA","island: Dream<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 21.2<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.7<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 19.5<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.5<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.8<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 16.6<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 19.1<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 16.9<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 21.1<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.2<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.0<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 16.2<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 19.1<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 16.6<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.4<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 19.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.4<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.5<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 16.8<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.4<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 16.1<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.1<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 17.6<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 18.8<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.4<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 20.3<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 19.5<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 19.2<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.8<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.0<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 16.1<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 20.0<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 16.0<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 20.0<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.9<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 20.0<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 19.0<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 16.5<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 20.3<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 17.7<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 19.5<br />species: Adelie<br />sex:  male","island: Biscoe<br />bill_depth_mm: 20.7<br />species: Adelie<br />sex:  female","island: Biscoe<br />bill_depth_mm: 18.3<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 20.5<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.8<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 15.9<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.0<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.6<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.3<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 18.0<br />species: Adelie<br />sex:  male","island: Torgersen<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  female","island: Torgersen<br />bill_depth_mm: 19.2<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.6<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 17.5<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 20.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 16.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 17.9<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 17.2<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 15.5<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 17.0<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 16.8<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.7<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.6<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 18.4<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 17.8<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.1<br />species: Adelie<br />sex:  male","island: Dream<br />bill_depth_mm: 17.1<br />species: Adelie<br />sex:  female","island: Dream<br />bill_depth_mm: 18.5<br />species: Adelie<br />sex:  male"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"Adelie","legendgroup":"Adelie","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1.9584561759606003,2.3862926431000231,1.6622930793091655,2.2631427198648453,2.3104841576889159,2.0282744178548455,1.6149158256128431,2.1018044514581562,1.6833040107041597,1.9672676250338554,2.2660315057262777,2.0049658132717014,2.067340401560068,2.1118684846907856,2.0042827600613236,2.2073131127282979,2.147120206989348,1.6746543115004897,1.7701711298897862,1.8392266811802984,2.2278331730514767,1.6271037122234702,1.9653059808537363,2.2474447641521693,1.7103104384616017,1.6805741989985108,1.8231486668810248,1.9081655532121657,1.9252432376146316,2.313146442733705,1.624988262169063,2.3022250786423681,2.2035675503313543,2.3234999636188149,1.827200648933649,2.0824417103081942,1.7774407256394624,1.6628566145896913,1.8413750743493438,2.3234496012330057,2.0293764574453235,2.3900741269811987,2.3785321528092025,1.6791935835033656,1.9410512577742338,2.2618186373263596,1.8534167546778917,1.8258240880444645,1.8047682326287031,2.334167183563113,2.2612625626847147,2.0859734209254386,1.8885477324947715,2.1471036814153193,1.9905089989304543,2.0686847634613512,2.3130631854757668,2.0519644238054751,1.9546811504289507,1.943454804457724,1.7117605479434133,1.7257804026827217,2.2553348716348411,2.3330760223791005,2.2776256259530783,2.0894195007160308,1.7900704270228744,1.6954875824972988],"y":[17.891949209794401,19.523009097930043,19.192261694557963,18.667009580601007,19.824602105859668,17.79429523665458,18.172350555378944,18.223968784976748,18.863674788363276,19.866417935434729,17.806552996058016,20.27351301904768,17.275935935508461,18.090148337036371,17.066369412690403,19.637329833600671,20.006856252402066,17.771967850700022,18.629485520739109,18.17775993641466,17.271430694460872,17.466883442420514,16.585852278750391,19.370056749396024,17.873149470128119,18.970700281802564,18.374009064547717,19.032335943039506,17.789841127153487,19.979756132885814,16.631135324053467,20.77866806415841,16.709496103283016,18.819169946126639,18.576723020933571,16.768093813676387,18.327086022123694,20.668564656507225,16.576559142339978,19.895731160473076,19.481502337418497,17.474848905541002,19.118587518110871,16.96507475886494,17.881990059316156,18.46133809691295,17.913967952728271,19.625946113429965,18.684724091831594,17.282185182943941,16.384400731306521,19.032171185016633,17.290297610033303,19.736803153399375,17.27171745920554,18.779390418119728,16.614020364359021,19.925620588492599,18.816564677432179,19.360575060043484,19.484480486661194,16.47575145410374,16.990455441884695,19.827637763544917,18.094742025192829,18.188538946583865,19.014218506831675,18.722169141732156],"text":["island: Dream<br />bill_depth_mm: 17.9<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.5<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 19.2<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.7<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.2<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.2<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.9<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.9<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 20.3<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.1<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.1<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.6<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 20.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.6<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.2<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 17.5<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.6<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.4<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.9<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.4<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.8<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 20.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.6<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 20.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.7<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.6<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.8<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 20.7<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.6<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.9<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 19.5<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.5<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.1<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.0<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 17.9<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.5<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.9<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.6<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.7<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 16.4<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.7<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 17.3<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.6<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.9<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 19.4<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.5<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 16.5<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 17.0<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 19.8<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.1<br />species: Chinstrap<br />sex:  female","island: Dream<br />bill_depth_mm: 18.2<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 19.0<br />species: Chinstrap<br />sex:  male","island: Dream<br />bill_depth_mm: 18.7<br />species: Chinstrap<br />sex:  female"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,186,56,1)"}},"hoveron":"points","name":"Chinstrap","legendgroup":"Chinstrap","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.99923942070454363,1.0780997162684798,0.62250762097537515,0.84028975684195761,0.63045708611607543,1.3171983953565358,0.93137439936399458,0.93326065801084046,0.78279014173895123,0.99150667302310469,1.3083671700209378,0.80914509836584325,0.66530207432806487,1.0158016761764883,0.98132978882640598,0.80018600951880214,0.98822665940970178,1.10006716363132,0.92397137470543389,1.3194413537159564,0.98056144304573534,1.2619913794100284,0.88329051490873089,1.2367554942145944,0.73507787361741062,0.83886969741433859,0.83370018042623995,0.80497554149478678,1.1493190601468086,1.0362810621038079,1.2583442950621246,0.65271587800234554,0.94524098131805656,0.81561687998473642,1.1044746702536941,0.64069729819893828,0.90402434207499027,0.83836217205971475,0.62792553436011067,1.0444693902507425,0.7973724938929081,1.1445727279409765,1.1724948083981872,0.76528886519372463,0.67316951639950273,0.80398253258317709,0.99902584534138439,1.358825231716037,0.67153253704309468,1.1676535762846469,1.0260567590594292,1.3049188179895284,0.88884680699557062,0.60003781691193581,1.1386090194806457,1.0538971420377492,0.95505076237022879,0.924630893021822,0.65915815103799102,1.2629505908116698,0.84713978525251155,0.62723084986209865,1.1283754132688046,0.88805529810488215,0.98664033077657221,1.1029967410489916,0.6770096942782402,1.3319982148706915,1.36862654928118,0.97308588009327646,0.89934508819133041,1.3762337887659668,1.0062876217067243,1.2037914132699372,1.1272722743451595,1.0507809514179827,0.86224246695637707,1.2565661229193212,0.97166011147201059,1.2364776425063611,1.3312487035989762,0.61736049000173798,1.3806391255930066,1.3833637529984117,1.1633134040981532,1.3052268851548434,0.75695893540978432,1.0147156603634357,1.0624038310721517,1.2379344714805485,0.62713233083486553,0.65015126261860123,1.3057282017543912,1.1480760030448436,0.83543507922440763,0.7800312377512455,1.0013885432854295,0.70717838630080221,0.63605568259954448,0.62785421553999177,0.69312376920133834,1.041482349857688,1.2459396148100494,0.69043701756745568,1.3431740518659354,0.60533839855343108,0.96949201561510567,0.79564836453646426,1.3821036862209439,0.60781054422259329,1.0426791373640298,0.84388014934957023,0.65233519133180384,0.92356258649379019,0.69547229669988153,0.72143083773553363,1.0542778348550201,1.3617125453427434,0.7460142685100436,1.0379924397915601,0.79813742004334931,1.3233708553016186,0.74095136970281605,1.1540862353518606],"y":[13.23255409406498,16.29887714162469,14.101119787786155,15.229715518709272,14.52329624487087,13.473342290949077,14.639772110544143,15.263893721997739,13.373600085321815,15.42624713672325,13.712561139613388,16.09612013636157,13.66844118366018,14.567630766518414,14.638551158718764,15.705333265010267,13.50442563617602,15.225429405421018,14.515254549216479,15.127772416435182,14.288656650297344,14.520609237439929,14.486694374848158,15.835022538751364,13.083299020100386,15.122283773589878,14.276136486381294,14.978619867060335,14.290019165743143,15.321061879470944,15.32972900627181,14.164190333615988,14.515098501723259,17.019834250938146,14.761259173713626,16.277471835892648,13.673439067509026,17.263269961383195,13.616916036382317,15.701171105168759,13.66843171838671,15.979595175515861,13.68240219760686,14.971972593981773,15.925771890487521,13.908890479523688,13.938996733836829,15.872523590940983,13.263653090223672,15.799891726132483,14.183854692932218,14.095652637612075,14.373786792606117,14.968084316626191,14.404008158240467,15.40071356797591,13.93700707519427,14.997196913436055,14.487165257576853,15.311032517347485,13.818120299205184,14.918656870182604,13.884995155669749,15.678391089960932,14.187578952647746,16.811576515417546,14.423967619612814,16.177237300239504,14.227244336623697,14.998144511952995,15.01337486648932,15.604473487529903,15.629941368233412,14.771193416621538,15.012882957123219,16.036187467873095,14.222765533253549,16.284239490237088,13.8221567979455,16.402225223369896,14.467671470995993,15.600719741731881,14.612040717247872,15.901156847886741,13.762320892065764,17.269044912885875,14.38194527713582,14.215317422766237,14.038769472800194,16.986083635892719,15.029662920068949,17.095702517889443,14.488004528004677,16.092724940441549,14.706272684670983,15.733935176506638,15.801219002697618,14.561753009613604,14.382586933597922,16.483303065486254,15.034118792861699,16.961332712396981,15.537105163130908,14.99775382341817,13.826316211707891,16.086274382248522,14.663349464107306,15.792812018468977,13.978748212307693,15.075068274773658,15.19225246893242,15.908507686927916,15.190216129943728,16.335446053426711,14.081131206359714,16.006706936173142,15.660571975018829,16.179674750715495,13.70884008154273,null,14.316075258422643,15.722752025984226,14.822979801557958,16.067591373585167],"text":["island: Biscoe<br />bill_depth_mm: 13.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.1<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.2<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.6<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.4<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.4<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.6<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.6<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.2<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.8<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.1<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.3<br />species: Gentoo<br />sex:  NA","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.3<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.6<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.9<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.9<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 13.9<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.9<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.3<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.8<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.4<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.4<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.4<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.9<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.9<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.9<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.8<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.4<br />species: Gentoo<br />sex:  NA","island: Biscoe<br />bill_depth_mm: 16.2<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.6<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.6<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.4<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.6<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.6<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.9<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.4<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.2<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.8<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.6<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 14.4<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.5<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 17.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.5<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.8<br />species: Gentoo<br />sex:  NA","island: Biscoe<br />bill_depth_mm: 16.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.8<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.0<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.1<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.9<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.2<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.3<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.1<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.0<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  NA","island: Biscoe<br />bill_depth_mm: 16.2<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 13.7<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm:   NA<br />species: Gentoo<br />sex:  NA","island: Biscoe<br />bill_depth_mm: 14.3<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 15.7<br />species: Gentoo<br />sex:  male","island: Biscoe<br />bill_depth_mm: 14.8<br />species: Gentoo<br />sex:  female","island: Biscoe<br />bill_depth_mm: 16.1<br />species: Gentoo<br />sex:  male"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(97,156,255,1)"}},"hoveron":"points","name":"Gentoo","legendgroup":"Gentoo","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.228310502283108,"r":7.3059360730593621,"b":40.182648401826498,"l":48.949771689497723},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,3.6000000000000001],"tickmode":"array","ticktext":["Biscoe","Dream","Torgersen"],"tickvals":[1,2,3],"categoryorder":"array","categoryarray":["Biscoe","Dream","Torgersen"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"island","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[12.661069289068692,21.950123371765947],"tickmode":"array","ticktext":["15.0","17.5","20.0"],"tickvals":[15,17.5,20],"categoryorder":"array","categoryarray":["15.0","17.5","20.0"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"bill_depth_mm","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"species","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"b08b13046dfb":{"x":{},"y":{},"colour":{},"text":{},"type":"scatter"}},"cur_data":"b08b13046dfb","visdat":{"b08b13046dfb":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<section id="correlation-plots" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="correlation-plots"><span class="header-section-number">2.3.1</span> Correlation plots</h3>
+<p>Here’s an example of a useful way to explore correlations from <a href="https://allisonhorst.github.io/palmerpenguins/articles/pca.html" class="uri">https://allisonhorst.github.io/palmerpenguins/articles/pca.html</a></p>
+<p>Notice the <a href="https://en.wikipedia.org/wiki/Simpson%27s_paradox">Simpson’s paradox</a>? This is a great example of how correlations alone can be misleading.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species, body_mass_g, <span class="fu">ends_with</span>(<span class="st">"_mm"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>(<span class="fu">aes</span>(<span class="at">color =</span> species),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"flipper_length_mm"</span>, <span class="st">"body_mass_g"</span>, </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"bill_length_mm"</span>, <span class="st">"bill_depth_mm"</span>)) </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are trying to run this code you will need to install.packages("GGally").</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># The :: in the GGally::ggpairs() above tells R to look for the ggpairs() function within the GGally package, but without loading all of the functions from that package.</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># It is also useful to remind yourself which package a function comes from if it is not something you use often.</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="intro_vis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="communication-and-publishing" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="communication-and-publishing"><span class="header-section-number">2.4</span> Communication and publishing</h2>
+<p>At this point of your workflow you’ve got a good idea about your data and there’s something from it that you want to communicate. There’s a lot of books and resources online, and conflicting opinions about what is best practice.</p>
+<p>Visualisations can be very effective…. or terrible: <a href="viz.wtf">viz.wtf</a></p>
+ <div class="tumblr-post" data-href="https://embed.tumblr.com/embed/post/jrYB9ls9tbp1jgCsod6-GQ/673472354894086144" data-did="4e6336e4859d2d85a490c81a6cb5419f5722b3dd"><a href="https://viz.wtf/post/673472354894086144/sticking-your-neck-out">https://viz.wtf/post/673472354894086144/sticking-your-neck-out</a></div>  <script async="" src="https://assets.tumblr.com/post.js"></script>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Check out this website to help you rate your data visualisation: <a href="https://stephanieevergreen.com/rate-your-visualization/" class="uri">https://stephanieevergreen.com/rate-your-visualization/</a></p>
+</div>
+</div>
+<p>I won’t attempt to explain all there is to know about best practises but have included some relevant resources. Some are even specific to R: <a href="http://rafalab.dfci.harvard.edu/dsbook/data-visualization-principles.html" class="uri">http://rafalab.dfci.harvard.edu/dsbook/data-visualization-principles.html</a></p>
+<p>As animal scientists we often need to produce visualisations for presentations and for publications, which have different requirements.</p>
+<p>For example, you won’t see this in a publication but it is effective in drawing attention to your data in a presentation (although there’s still room for improvement with this plot):</p>
+<p><img src="images/liveweight_moving_looped.gif" class="img-fluid"></p>
+<p>For inspiration and advice for choosing the correct visualisation check out: <a href="https://www.data-to-viz.com/" class="uri">https://www.data-to-viz.com/</a></p>
+<p>There’s also a page on this site that links to certain caveats to watch out for, such as the problems with a dual axis: <a href="https://blog.datawrapper.de/dualaxis/" class="uri">https://blog.datawrapper.de/dualaxis/</a></p>
+<p>Did I mention that opinions can differ? Some animal scientistis love these difficult-to-interpet graphs!</p>
+<p>It just so happens that the authors of <code>ggplot2</code> dislike dual axis plots and it is therefore inherently difficult to do with <code>ggplot2</code> (with <a href="https://ggplot2.tidyverse.org/reference/sec_axis.html">some exceptions</a>)</p>
+<section id="plots-for-publications" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="plots-for-publications"><span class="header-section-number">2.4.1</span> Plots for publications</h3>
+<p>There is a whole package dedicated to helping format plots for publications: <a href="https://rpkgs.datanovia.com/ggpubr" class="uri">https://rpkgs.datanovia.com/ggpubr</a></p>
+<p>For example, it is great for adding measures of significance (* or P values) to a plot, such as:</p>
+<p><img src="images/GOI_example.png" class="img-fluid" width="755"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is the ggplot part of the code to make the above plot, but it won’t run as a reproducible example. It also won’t make much sense now, but after you finish this course it might!</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>p_for_publish<span class="ot">&lt;-</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> data0 , </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Treatment,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">y =</span> column_to_plot,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">colour =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_blank</span>(<span class="fu">aes</span>(<span class="at">x=</span>Treatment, <span class="at">y =</span> y_max0))<span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment))<span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment),<span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">width =</span> <span class="fl">0.3</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">shape =</span> <span class="dv">21</span>)<span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  viridis<span class="sc">::</span><span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  viridis<span class="sc">::</span><span class="fu">scale_fill_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  lemon<span class="sc">::</span><span class="fu">facet_rep_grid</span>(<span class="at">cols =</span> <span class="fu">vars</span>(region), <span class="at">rows =</span> <span class="fu">vars</span>(gene_name), <span class="at">repeat.tick.labels =</span><span class="st">'y'</span>, <span class="at">scale =</span> <span class="st">"free_y"</span>)<span class="sc">+</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Treatment"</span>)<span class="sc">+</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Log2 Expression"</span>)<span class="sc">+</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_classic2</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">angle=</span><span class="dv">25</span>, <span class="at">hjust=</span><span class="dv">1</span>),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"plain"</span>),</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"italic"</span>), </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"plain"</span>),</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"plain"</span>))<span class="sc">+</span> </span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  ggpubr<span class="sc">::</span><span class="fu">stat_pvalue_manual</span>(<span class="at">data =</span> data_DE_2 ,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y.position =</span> <span class="st">'y.position'</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>                             <span class="at">label =</span> <span class="st">"adj-P = {p.adj}"</span>,</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>                             <span class="at">label.size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>                             <span class="at">color =</span> <span class="st">"blue"</span>,</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>                             <span class="at">step.group.by =</span> <span class="st">"region"</span>,</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>                             <span class="at">hide.ns=</span>F)</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</section>
+<section id="plots-for-anything" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="plots-for-anything"><span class="header-section-number">2.4.2</span> Plots for anything!</h3>
+<p>Nearly everything in a plot created with `ggplot2` can be customised. Although this may be tedious at first, it becomes very quick to re-produce high quality plots. We will cover some of these, but if you can think of it, there’s a fair chance someone has already asked about it online!</p>
+<p>I even made the logo for this course using an R package I found after googling some ideas.</p>
+<div class="cell">
+<details>
+<summary>See the code for the logo:</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "See the code for the logo:"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>string_df1 <span class="ot">&lt;-</span> hershey<span class="sc">::</span><span class="fu">create_string_df</span>(<span class="at">text =</span> <span class="st">"Plotting in R"</span>, <span class="at">font =</span> <span class="st">'futural'</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">row =</span> <span class="dv">1</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>string_df2 <span class="ot">&lt;-</span> hershey<span class="sc">::</span><span class="fu">create_string_df</span>(<span class="at">text =</span> <span class="st">"for Animal Science"</span>, <span class="at">font =</span> <span class="st">'futural'</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">row =</span> <span class="dv">2</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>string_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(string_df1, string_df2)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(string_df, </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(x, y, </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">group =</span> <span class="fu">interaction</span>(char_idx, stroke),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">colour =</span> char,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">shape =</span> <span class="fu">as.factor</span>(row))) <span class="sc">+</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'none'</span>)<span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="at">rows =</span> <span class="fu">vars</span>(row))</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="intro_vis_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./intro.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started in Rstudio</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./data_wrangling.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data wrangling</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

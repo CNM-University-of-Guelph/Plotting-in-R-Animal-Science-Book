@@ -1,0 +1,139 @@
+# Summarising data
+```{r}
+#| eval: true
+#| include: false
+suppressPackageStartupMessages(library(tidyverse))
+library(palmerpenguins)
+df_data <- data.frame(
+  Animal_ID = rep(c(11,12,21,22), times = 3),
+  Timepoint = rep(seq(from = 1, to = 3), each = 4),
+  Treatment_Group = rep(c("Treatment A","Treatment B"), each = 2, times = 3),
+  Variable = c(1,1.2,1,1.2,2,2.5,.5,.4,3,3.5,0.2,.1))
+
+```
+
+Often we are interested in comparing treatment means. Taking the mean of variables in our data is way of summarising it, along with various other ways we can summarise our data in R.
+
+If we want the summary of different treatments, we are actually wanting to group our data by these treatments and then calculate something from them. 
+
+## Split-apply-combine concept
+As we will see, one of the most useful tools is the `group_by()` function. This works on the 'split-apply-combine' principal where you split the data up into smaller tables, do something to those smaller tables, then put all the data back together again.
+
+Let's say we wanted to know the sum of the Variable column, we could do:
+
+```{r}
+sum(df_data$Variable)
+```
+
+As we learnt in the previous chapter, we could store this in a new column using `mutate()`:
+
+```{r}
+df_data %>% mutate(sum_total = sum(Variable))
+```
+
+But let's say we wanted to know the sum of the variable column for each Treatment (not total). If we 'group_by' Treatment_Group first, then behind the scenes the sum function will first be given a subset of the dataframe containing only the Treatment A data, then it will be given all of the Treatment B data. To do it manually we would have to do do:
+
+```{r}
+df_treatmentA <- df_data %>% filter(Treatment_Group == 'Treatment A')
+
+sum(df_treatmentA$Variable)
+```
+
+Then we would then have to repeat this for all of the treatments, which is not ideal. So, one might consider using a function to help, like:
+
+```{r}
+# 1. get all unique names in Treatment_Group
+treatments <- unique(df_data$Treatment_Group)
+
+treatments
+```
+
+
+```{r}
+#2. Write a function
+f_groupsums <- function(x){
+  df_temp <- df_data %>% filter(Treatment_Group == x)
+  
+  return(sum(df_temp$Variable))
+}
+
+#3. use apply to iterate through the treatments 
+lapply(treatments, f_groupsums)
+```
+
+This takes a lot of code,is probably a little scary if you're not used to making functions, and returns a list of numbers that you then need to process further to get the treatment names for them.
+
+## The easy way
+Instead, we use `group_by` with the `summarise` function instead.
+The summarise function is like mutate, except you use functions inside it that summarise the data, returning single values per group:
+
+```{r}
+df_data %>% 
+  group_by(Treatment_Group) %>% 
+  summarise(sum_groups = sum(Variable))
+```
+
+This gives the same numbers, only in a nice data frame. 
+
+It's also possible to group by multiple columns:
+```{r}
+df_data %>% 
+  group_by(Treatment_Group, Timepoint) %>% 
+  summarise(sum_groups = sum(Variable))
+```
+
+
+You could actually still use `mutate` if you wanted to store this in a column of the original data frame (useful for some calculations, such as % within a group)
+
+```{r}
+df_data %>% 
+  group_by(Treatment_Group) %>% 
+  mutate(sum_groups = sum(Variable),
+         perc_of_group_sum = Variable/sum_groups*100) %>% 
+    arrange(Treatment_Group) #just to make it nicer to read
+```
+
+This same principal applies to all base functions (e.g. mean, max, min, etc) or you can write custom functions and use them with mutate and summarise:
+
+```{r}
+df_data %>% 
+  group_by(Treatment_Group) %>% 
+  summarise(mean_variable = mean(Variable, na.rm=TRUE)) #use na.rm=TRUE if you want the mean function to ignore NA values
+```
+
+## Summarising multiple columns
+As we mentioned previously, we can use `tidyselect` with `across()` to efficiently iterate through our columns.
+
+
+Let's say we want to find the mean and sd of all columns that contain numbers. We could write it out in long form:
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarise(bill_length_mean = mean(bill_length_mm, na.rm = TRUE),
+            bill_length_sd = sd(bill_length_mm, na.rm = TRUE),
+            bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE),
+            bill_depth_sd = sd(bill_depth_mm, na.rm = TRUE)
+            #etc....
+            )
+```
+
+Or, we can use `across()`:
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarise(
+    across(.cols = where(is.numeric),
+           .fns = list(mean = ~mean(.x, na.rm = TRUE),
+                       sd = ~sd(.x, na.rm=TRUE)),
+           .names = '{.col}_{.fn}') #see ?across for details on how this works
+  )
+
+```
+
+
+
+## Task: 
+- Choose 1 variable from you data and calculate the mean and sd for each treatment (or another relevant group)
+- Mutate 2 new columns to your summary table called `ymin` and `ymax`, containing the values calculated from `mean - SD` and `mean + SD`, respectively. 
+- _Advanced_: re-calculate your summary table but also include the number of samples per group.
+

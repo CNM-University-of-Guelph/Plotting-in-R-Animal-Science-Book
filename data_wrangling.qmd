@@ -1,0 +1,598 @@
+# Data wrangling
+
+```{r}
+#| eval: true
+#| include: false
+suppressPackageStartupMessages(library(tidyverse))
+library(palmerpenguins)
+```
+
+Real data is messy and often the data input and re-formatting is a tedious task, especially if those collecting the data are not familiar with what works best for computer languages.
+
+## Base R vs tidyverse
+
+Although we will skip of many of the basic R functionality, here is a quick overview of some key features. Based on <https://r4ds.hadley.nz/workflow-basics.html#coding-basics>
+
+Basic arithmetic with single numbers:
+
+```{r}
+#| echo: true
+#| eval: false
+
+1 / 200 * 30
+#> [1] 0.15
+
+(59 + 73 + 2) / 3
+#> [1] 44.66667
+
+2^2
+#> [1] 4
+
+sqrt(4)
+#> 2
+```
+
+Assignment operator. This assigns the number to an 'object name':
+
+```{r}
+x <- 5 * 2
+
+print(x)
+```
+
+Any object we create in R can be assigned a name, so that it is stored in our Environment for us to access again:
+
+```{r}
+#| eval: false
+#| echo: true
+object_name <- value
+```
+
+When reading that code, say "object name gets value" in your head.
+
+::: callout-tip
+To quickly type the assignment operator `<-` press ALT plus - key (or Option plus - on Mac). Other keyboard shortcuts are listed under *Tools -\> Keyboard Shortcuts Help.*
+:::
+
+Multiple elements can be combined together into a vector. R will apply functions and arithmetic to the a whole vector. This is a very useful concept in R as we will see when working with data frames (tables).
+
+```{r}
+x <- c(3, 5, 10, 1)
+
+print(x)
+
+print(x * 2)
+
+```
+
+If we want to access a single element of that vector we can use:
+
+```{r}
+x[1]
+```
+
+or multiple elements:
+
+```{r}
+# get values from 1st to 2nd position
+x[1:2]
+
+# use a logical vector:
+x[c(TRUE, TRUE, FALSE, FALSE)]
+
+# or use another vector of positions to return:
+x[c(1,3)]
+```
+
+Leave a lot of comments in your code! Your future self will love you for it.
+
+```{r}
+# This text is not evaluated by R, because it starts with a hashtag.
+# You can highlight multiple rows of code and press Ctrl + Shift + C to 'comment out' all of them at once.
+```
+
+### Functions
+
+Functions are basically scripts that are designed to take certain inputs, do something useful with those inputs, and then give you something back. They take the form:
+
+```{r}
+#| echo: true
+#| eval: false
+function_name(argument1 = value1, argument2 = value2, ...)
+```
+
+For example, the function we used above `sqrt()` expects 1 argument: 'a numeric or complex vector or array'. Therefore, we could have written:
+
+```{r}
+sqrt(x = 4)
+
+# because there is only 1 argument, we would typically leave the x = out of it.
+sqrt(4)
+```
+
+Even when we have multiple arguments, we don't have to write them out in full if we maintain the correct order of arguments. Often it is better to though, so you can easily see what you're trying to do.
+
+```{r}
+seq(from = 10, to = 30, by = 2)
+
+# same as this, which might be confusing:
+#seq(10, 30, 2) 
+```
+
+Sometimes we find functions with `...` which means that it will take multiple values in this position.
+
+For example, the`paste()` function expects `...` for it's first object and the help page says this argument should be: "One or more R objects, to be converted to character vectors".
+
+Therefore we can do:
+
+```{r}
+paste("Hello", "World")
+
+# OR:
+string1 <- "Hello" 
+string2 <- "World"
+
+paste(string1, string2)
+```
+
+But it still has named arguments we can use:
+
+```{r}
+paste(string1, string2, sep = "_*_")
+```
+
+When we paste a vector with a single value, it will return multiple strings. But we can also request them to be collapsed into 1 string.
+
+```{r}
+# multiple strings:
+paste(x, string1, sep = "")
+
+# 1 string:
+paste(x, string1, string2, sep = "", collapse = "_")
+```
+
+::: callout-tip
+If you're working with strings, check out the [`stringr` package](https://stringr.tidyverse.org/).
+:::
+
+## Create demo dataset
+
+This code creates a data frame using only numbers and strings (text). This is an example of a 'reproducible example' where anybody can take this code, run it and see the same `df_data` object in their environment.
+
+This is also handy for testing code or asking questions online. For more details on reproducible examples see <https://www.tidyverse.org/help/#reprex>
+
+You'll rarely need to make a data frame from scratch, but it's handy to see that it is a collection of vectors, where each row is a vector.
+
+```{r}
+#| echo: fenced
+df_data <- data.frame(
+  Animal_ID = rep(c(11,12,21,22), times = 3),
+  Timepoint = rep(seq(from = 1, to = 3), each = 4),
+  Treatment_Group = rep(c("Treatment A","Treatment B"), each = 2, times = 3),
+  Variable = c(1,1.2,1,1.2,2,2.5,.5,.4,3,3.5,0.2,.1))
+
+```
+
+To show the dataframe we just created below our code chunk we can write `print(df_data)` or simply `df_data` works in RStudio:
+
+```{r}
+df_data
+```
+
+This dataframe can also be viewed in it's own tab inside RStudio, like an excel sheet. Put your cursor on `df_data` and press F2 or type:
+
+```{r}
+#| eval: false
+View(df_data) #notice the capital V
+```
+
+## Wide vs Long vs Tidy data
+
+Often people consider the shape of a data frame to be either wide or long. Wide data might look like this, where some column names contains values (not headings):
+
+```{r}
+#| code-fold: true
+pivot_wider(df_data, 
+            names_from = Timepoint, 
+            values_from = Variable, 
+            names_prefix = "Time_")
+```
+
+Or, we might see that information about the same animal is spread across multiple rows in a long format:
+
+```{r}
+#| code-fold: true
+pivot_longer(df_data,
+             cols = c(Timepoint, Variable), 
+             names_to = 'name', 
+             values_to = 'value')
+```
+
+But when we made our demo data frame we actually made it in 'tidy' format, because the tidyverse is designed to work with data in this format. The principals are best described in the R for Data Science book: <https://r4ds.hadley.nz/data-tidy.html#fig-tidy-structure>
+
+We will often collect observational data in wide format, and present our research in wide format for publications, because it is often the best way for humans to understand data on a page. There are 2 very useful functions for converting your data to a tidy format when you are workign with your data in R: `pivot_wider()` and `pivot_longer()`. In fact, that's the functions used above to swap our original data frame.
+
+## Introducing 'select' function
+
+Picture every function as having an input and output. For example, the basic function `paste('hello', 'world')` has 2 strings given to it as input, and then when the function is executed it outputs 1 character string, which we can then assign to an object and use later.
+
+If we extend this to a function that works on data frames, we would normally give the function a data frame as input and it will return the updated/modified dataframe as output. **When using functions from dplyr/tidyverse they always take the input data as the first argument of the function.**
+
+For example, `select()` is a function for selecting columns from data frames. Our example data frame has 4 columns, but let's say we wanted only 2 of them and we wanted to select which ones to keep by using their names, we could write:
+
+```{r}
+#| echo: fenced
+# select takes the dataframe as first argument, then the names of the columns you want to keep/exclude
+df_two_columns <- select(df_data, Animal_ID, Variable)
+
+df_two_columns
+```
+
+We can also specify the columns we don't want by using a `-` symbol before it. The following function will give the same result as above but by exluding the unwanted columns.
+
+```{r}
+df_two_columns <- select(df_data, -Timepoint, -Treatment_Group)
+
+df_two_columns
+
+```
+
+The select function can also be used with 'selection helpers'. For example if you want all columns that included a certain bit of text you could use `contains("text_to_search")`, or if you wanted columns that started with a certain bit of text `starts_with("text_to_search")`. You can also select columns based on what type of data they contain. Our example data frame has columns of type 'num' (number, technically they are a 'double'), 'int' (integer, i.e. a num but not a double) or 'chr' (character):
+
+```{r}
+glimpse(df_data)
+```
+
+So, if we wanted to select the columns with characters we could use the `where()` helper function:
+
+```{r}
+select(df_data, where(is.character))
+```
+
+::: callout-note
+`is.character()` is a function in itself. By using it inside `where()` it lets you use it safely with the select function. E.g. you could test if some object or column is a character directly with it: `is.character(df_data$Animal_ID)` = FALSE `is.character(df_data$Treatment_Group)` = TRUE
+:::
+
+The select function also returns the data frame with the columns in the order you specify. Sometimes you might have 100 columns, and you mutate a new column onto the end, but you want it to appear first. You could use the 'everything()' helper as follows:
+
+```{r}
+# selects the column of interst first, then returns 'everything' else
+select(df_data, Variable, everything())
+```
+
+::: callout-tip
+There's actually another function called `relocate()` that makes this even easier:
+
+```{r}
+#| code-fold: true
+#| eval: false
+relocate(df_data, Variable)
+```
+:::
+
+## Using pipes
+
+At this point we should introduce one of the most useful aspects of using the tidyverse, pipes.
+
+Pipe refers to: %\>% (or \|\> if using R's newly inbuilt pipe, see Global Options in RStudio)
+
+When working with data that has been imported there are normally multiple 'data wrangling' steps involved, such as selecting columns of interest, adding new columns of calculated values, filtering out rows of interest, etc. Each of these steps can get messy in the code when each step is taking a data frame as input and giving a new data frame as output. So, the %\>% is used to keep the code more readable.
+
+The %\>% takes the output from function and gives it to the first position/argument of the next function, without having to save it as a variable in your environment. It takes this structure: `output_from_previous %>% next_function(argument1 = 1, argument2 = 3)` is the same as `next_function(output_from_previous, argument1 = 1, argument2 = 3)` Notice how the 'output_from_previous' object is placed into the first position of the next function by the pipe.
+
+For the first pipe in a chain of pipes the 'output_from_previous' is normally just a starting data frame object itself, which is parsed to the first position of the function: `df_data %>% next_function()`
+
+Let's take the above select function example and re-write it using the pipe:
+
+```{r}
+#Original:
+#df_two_columns <- select(df_data, Animal_ID, Variable)
+
+df_two_columns <- df_data %>% select(Animal_ID, Variable)
+
+df_two_columns
+```
+
+For this example it makes very little difference to the 'readability' of the code. But let's say we have 3 steps of cleaning we want to do:
+
+1.  **Select** 3 columns: Animal_ID, Variable, Treatment_Group
+2.  **Arrange** the columns in order of Animal_ID
+3.  **Filter** out any rows that have a 'Variable' reading of less than 1
+
+Without pipes we might do this.
+
+Step 1 - select:
+
+```{r}
+df_step1 <- select(df_data, Animal_ID, Variable, Treatment_Group)
+
+df_step1
+
+
+```
+
+Step 2 - arrange:
+
+```{r}
+df_step2 <- arrange(df_step1, Animal_ID)
+
+df_step2
+
+```
+
+Step 3 - filter:
+
+```{r}
+#The ! symbol means NOT and negates a check. Here it is used when you want to exclude rather than keep what you are filtering.
+df_step3 <- filter(df_step2, !Variable < 1)
+
+df_step3
+```
+
+
+This creates a lot of variables in your environment which wastes memory and is difficult to keep track of. Therefore, we can use pipes to do the same:
+
+```{r}
+df_out <- df_data %>% 
+  select(Animal_ID, Variable, Treatment_Group) %>%  
+  arrange(Animal_ID) %>% 
+  filter(!Variable < 1) 
+
+
+df_out
+```
+
+When troubleshooting a problem in a chain of functions, you can split the chain at any point by removing a %\>% and returning everything up to that point to help you visualise what the data frame looks like at that point in the chain.
+
+## Import data
+
+Normally we are interested in importing some data we have stored in a spreadsheet, such as what we might have in Excel.
+
+If we've collected data in an experiment, it's probably in a nicely formatted Excel format that is terrible for computer to read. Often it is easiest to re-format your tables with 1 row for column headings, and remove all formatting.
+
+Sometimes this is best done by saving a sheet to a plain text format such as `.csv` or `.txt`. It also means your data isn't modified automatically by Excel (such as some gene names being converted to dates e.g. MARCH1, [which have now been renamed because of this](https://www.theverge.com/2020/8/6/21355674/human-genes-rename-microsoft-excel-misreading-dates) ).
+
+Plain text files are one of the most standard ways of saving data for both humans and software to read, and for most data we work with from experiments it is relatively fast. But note, there are much more efficient ways of handling bigger data sets: <https://r4ds.hadley.nz/arrow.html>
+
+```{r}
+# find the file path to a demo dataset
+
+my_filepath <- palmerpenguins::path_to_file("penguins_raw.csv")
+
+print(my_filepath)
+```
+
+Use this filepath to import with \`data.table::fread()\`
+
+```{r}
+df_in <- read_csv(file = my_filepath)
+
+# View(df_in)
+```
+
+Check the dimensions and structure of your data to make sure it's imported how you expected:
+
+```{r}
+# just the dimensions
+dim(df_in)
+
+# structure of df
+glimpse(df_in)
+```
+
+::: callout-note
+My personal preference is to use the `fread()` function from the `data.table` package (which is a popular alternative to the tidyverse way of working with data). I've found it to be good at guessing what type of data is in each column, for various file formats and is faster than other functions (`fread` is short for 'fast read').
+
+It also works with multiple filetypes and guesses what to do based on the file extension of the file.
+:::
+
+It is good practice to store your input files for your scripts in a subfolder of your Project directory called 'Inputs' or 'data' or something similar. That way, you are storing a copy of the original data with your scripts, and you can use relative filepaths:
+
+```{r}
+#| echo: true
+#| eval: false
+df_in <- read_csv("./Inputs/my_awesome_data.csv")
+```
+
+### Reading in excel files
+
+It has become easier to read data directly from excel sheets. It is still worth remembering that data you see formatted in cells in Excel is not always a good representation of what is stored underneath it (e.g. dates as the number of seconds since January 1, 1970). Let the function try and guess the data types correctly, and modify if neccesary. See details: <https://r4ds.hadley.nz/spreadsheets.html>
+
+You can also specify which sheet to import.
+
+```{r}
+#| echo: true
+#| eval: false
+df_in <- read_excel("./Inputs/my_awesome_excel_file.xlsx", sheet = "Sheet 1")
+```
+
+::: callout-tip
+## Tab completion
+
+When writing a file path to import or export a file, you can press the Tab button on your keyboard after you type `"./"`, and it will display a list of files and folders. Tab complete is useful for typing long variable or function names too.
+:::
+
+### Column names
+
+When we looked at the raw data from `palmerpenguins` we noticed that some of the column names had spaces in them. We can technically get by with this using ticks:
+
+```{r}
+#| echo: true
+#| eval: false
+df_in$`Sample Number`
+```
+
+::: callout-note
+Note that the `$` is a base R way of accessing the values within a column
+:::
+
+To fix these column names we can either:
+
+1.  Tell `read_csv` what names to use:
+
+```{r}
+
+read_csv(my_filepath, 
+         col_names = c("studyName", 'sample_number', 'Species'), 
+         show_col_types = FALSE # this stops the message about cols printing
+         )
+```
+
+As you can see, we would have to write out all 17 column names otherwise it gets a generic name like `X4`
+
+2.  Therefore, we could just rename some by hand:
+
+```{r}
+# view current column names
+colnames(df_in)
+
+df_in <- 
+  df_in %>% 
+  rename(
+    # new_name = old_name
+    sample_number = `Sample Number`,
+    individual_ID = `Individual ID` # etc.
+  )
+
+# check new column names
+# colnames(df_in)
+```
+
+3.  We can also use `janitor::clean_names()` to fix them automatically:
+
+```{r}
+# You may need to run: install.packages("janitor")
+df_in <- 
+  df_in %>% 
+  janitor::clean_names()
+
+colnames(df_in)
+```
+
+## Task:
+
+1.  Import your own data into R
+2.  Check the structure of the data frame (data types in each column)
+3.  Rename some columns so they are all easy to work with
+
+## Other useful basic tools
+
+### mutate
+
+The `mutate()` function is another dplyr verb you'll use a lot. It adds columns to your current data frame. For this we will use our own simple data frame that we created earlier.
+
+We can add a single values to all rows of a data frame:
+
+```{r}
+df_data %>% 
+  mutate(new_col = 1,
+         another_col = "hello")
+```
+
+It's more likely that will want to take a column we already have, do something to it and store it in a new column:
+
+```{r}
+df_data %>% 
+  mutate(
+    Variable_doubled = Variable * 2
+  )
+```
+
+This is similar to how we multiplied every element of a vector by 1 number earlier. We can also use functions, and also refer to the column we just calculated in the next row:
+
+```{r}
+df_data %>% 
+  mutate(
+    variable_mean = mean(Variable),
+    variable_minus_mean = Variable - variable_mean
+  )
+
+# In reality we would just do: 
+# mutate(variable_minus_mean = Variable - mean(variable_mean))
+```
+
+It's also useful to replace the column, especially if we transform its type:
+
+```{r}
+df_data %>% 
+  mutate(
+    Variable = as.integer(Variable),
+    Treatment_Group = as.factor(Treatment_Group)
+  )
+```
+
+It's also works well with `tidyselect` functions, like we did using `select()`. But this time we need the `across()` function, which is a little more advanced but super useful. See <https://r4ds.hadley.nz/iteration.html>
+
+Here we will use the `penguins` dataset again.
+
+If we wanted to divide all numeric columns by 100 and then round to 1 digits we could do:
+
+```{r}
+penguins %>% 
+  mutate(
+    across(where(is.numeric), ~ .x / 100),
+    across(where(is.numeric), ~round(.x, digits = 1))
+    )
+  
+```
+
+This functionality is even more useful with `summarise()` which we will touch on in the next chapter.
+
+### Filter data
+
+Another common task we have is to filter out rows of data based on some criteria we have. Let's say we only wanted the data from Animal 22:
+
+```{r}
+df_data %>% 
+  filter(Animal_ID == 22)
+```
+
+We can negate this to show everything other than Animal 22:
+
+```{r}
+df_data %>% 
+  filter(!Animal_ID == 22) 
+# filter(Animal_ID != 22) also works
+```
+
+We can specify multiple conditions:
+
+```{r}
+# AND operator is &
+df_data %>% 
+  filter(Animal_ID != 22 & Timepoint == 2)
+```
+
+```{r}
+# OR operator is |
+df_data %>% 
+  filter(Animal_ID == 22 | Timepoint == 2)
+```
+
+We can also use `%in%` to match multiple values
+
+```{r}
+df_data %>% 
+  filter(Timepoint %in% c(1,3))
+```
+
+### Handling NA values
+
+Normally it is best to leave rows in place that contain NA values because no functions in the tidyverse will drop NA values without notifying you.
+
+If you need to remove rows with NA values you can use `tidyr::drop_na()`. With this you can tell it which columns to inspect for missing values.
+
+Before you do this, check out this explanation of missing values here: <https://r4ds.hadley.nz/missing-values.html>
+
+
+::: callout-note
+We haven't talked about dates or times here. It takes a little bit of time to learn, but keep in mind that ggplot works very nicely with dates and times, so take the time to format your timeseries data correctly: <https://r4ds.hadley.nz/datetimes.html>
+:::
+
+
+## Tasks:
+
+1. Add a column to your own data so that each row contains the string "cows" using `mutate()`
+2. Remove column using `select()`
+3. Add a column to your own data with a calculation using an existing column
+4. Create a subset of data using `filter()`
